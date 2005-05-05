@@ -4,10 +4,11 @@ package Config::Constants::XML;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use base 'Config::Constants::Perl';
 
+use Config::Constants::XML::SAX::Handler;
 use XML::SAX::ParserFactory;
 
 sub _init {
@@ -18,63 +19,6 @@ sub _init {
     my $p = XML::SAX::ParserFactory->parser(Handler => $handler);
     $p->parse_uri($file);
     $self->{_config} = $handler->config();
-}
-
-package Config::Constants::XML::SAX::Handler;
-
-use strict;
-use warnings;
-
-our $VERSION = '0.01';
-
-use base 'XML::SAX::Base';
-
-sub new {
-    my $class = shift;
-    my $self = $class->SUPER::new(@_);
-    $self->{_config} = undef;
-    $self->{_current_module} = undef;
-    $self->{_current_constant} = undef;    
-    return $self;
-}
-
-sub config { (shift)->{_config} }
-
-sub start_element {
-    my ($self, $el) = @_;
-    my $tag_name = lc($el->{Name});
-    if ($tag_name eq 'config') {
-        $self->{_config} = {};    
-    }
-    elsif ($tag_name eq 'module') {
-        $self->{_current_module} = $self->_get_value($el, 'name');
-        $self->{_config}->{$self->{_current_module}} = [];
-    }
-    elsif ($tag_name eq 'constant') {
-        $self->{_current_constant} = $self->_get_value($el, 'name');
-        push @{$self->{_config}->{$self->{_current_module}}} => (
-            { $self->{_current_constant} => $self->_get_value($el, 'value') }
-        );
-    }
-    else {
-        die "did not recognize the tag: $tag_name";
-    }
-}
-
-#sub end_element {
-#    my ($self, $el) = @_;
-#    my $tag_name = lc($el->{Name});
-#}
-
-#sub characters {
-#    my ($self, $el) = @_;
-#    my $data = $el->{Data};
-#}
-
-sub _get_value {
-    my ($self, $el, $key) = @_;
-    return undef unless exists $el->{Attributes}->{'{}' . $key};
-    return $el->{Attributes}->{'{}' . $key}->{Value};        
 }
 
 1;
@@ -98,6 +42,37 @@ This module reads and parses XML files as configuration files that look like thi
           <constant name='BAZ' value='the coolest module ever' />
       </module>
   </config>  
+  
+It is also possible to do more complex constant value types, like this:
+
+  <config>
+      <module name='Foo::Bar2'>
+            <constant name='BAZ' type='ARRAY'>
+              [ 1, 2, 3 ]
+            </constant>
+      </module>
+      <module name='Bar::Baz2'>
+          <constant name='FOO' type='HASH'>
+              { test => 'this', out => 10 }
+          </constant>
+          <constant name='BAR' type='My::Object'>
+              My::Object->new()
+          </constant>        
+      </module>
+  </config>
+  
+The C<type> parameter much match the value returned after C<eval>-ing the text.
+
+You can also include other configurations into the current one like this:
+
+  <config> 
+      <include path='conf/base_conf.xml' />
+      <module name='Foo::Bar'>
+          <constant name='BAZ' value='the coolest module ever' />
+      </module>
+  </config>  
+
+The configurations are processed in order, so in this example, anything set in F<conf/base_conf.xml> will be shadowed by anything set in the current xml.
 
 =head1 METHODS
 

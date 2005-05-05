@@ -3,9 +3,10 @@
 use strict;
 use warnings;
 
-use Test::More no_plan => 1;
+use Test::More tests => 3;
+use File::Spec;
 
-use Config::Constants perl => 't/conf.pl';
+use Config::Constants xml => File::Spec->catdir('t', 'confs', 'conf.xml');
 
 use t::lib::Foo::Bar;
 use t::lib::Bar::Baz;

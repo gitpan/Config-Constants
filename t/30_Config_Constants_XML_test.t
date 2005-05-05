@@ -7,14 +7,14 @@ use Test::More tests => 8;
 use File::Spec;
 
 BEGIN {
-    use_ok('Config::Constants::Perl');
+    use_ok('Config::Constants::XML');
 };
 
-can_ok('Config::Constants::Perl', 'new');
+can_ok('Config::Constants::XML', 'new');
 
 {
-    my $config = Config::Constants::Perl->new(File::Spec->catdir('t', 'confs', 'conf.pl'));
-    isa_ok($config, 'Config::Constants::Perl');
+    my $config = Config::Constants::XML->new(File::Spec->catdir('t', 'confs', 'conf.xml'));
+    isa_ok($config, 'Config::Constants::XML');
     
     can_ok($config, 'modules');
     can_ok($config, 'constants');    
@@ -35,5 +35,3 @@ can_ok('Config::Constants::Perl', 'new');
           { 'FOO' => 42 } ],
         '... got the right constants for Bar::Baz');
 }
-
-

@@ -4,7 +4,7 @@ package Config::Constants;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 my %CONFIG_LOADER_CLASSES = (
     perl => 'Config::Constants::Perl',
@@ -112,7 +112,7 @@ sub import {
             # from happening. When the proper sub gets 
             # installed, it will have that prototype (and 
             # thus be folded in)
-            *{"${calling_pkg}::$arg"} = sub { die "undefined Config::Constant" };
+            *{"${calling_pkg}::$arg"} = sub { die "undefined Config::Constant in ${calling_pkg}::$arg" };
         }
     }
 }
@@ -123,6 +123,7 @@ sub import {
 #    print "UNCHECKED: " . Dumper \%UNCHECKED_CONSTANTS;
 #    print "CHECKED: "   . Dumper \%CHECKED_CONSTANTS;     
 #}
+
 
 #sub handler {
 #    my $r = shift;
@@ -160,9 +161,9 @@ Config::Constants - Configuration variables as constants
   # or in the conf.pl
   
   {
-      'Foo::Bar' => [
-          { 'BAZ' => 'the coolest module ever' },
-      ]
+      'Foo::Bar' => {
+          'BAZ' => 'the coolest module ever',
+      }
   }  
   
   # in the in your perl code
@@ -185,7 +186,7 @@ Config::Constants allows you to avoid all that overhead by loading the configura
 
 If you want to see this module in action. Just run this command from within this distribution's folder, and compare what you see to the actual files.
 
-  perl -I lib/ -MO=Deparse,-ft/lib/Foo/Bar.pm,-ft/lib/Bar/Baz.pm t/11_Config_Constants_w_Perl_test.t
+  perl -I lib/ -MO=Deparse,-ft/lib/Foo/Bar.pm,-ft/lib/Bar/Baz.pm t/11a_Config_Constants_w_Perl.t
 
 =head2 Interaction with OO
 
@@ -255,15 +256,16 @@ None that I am aware of. Of course, if you find a bug, let me know, and I will b
 
 I use B<Devel::Cover> to test the code coverage of my tests, below is the B<Devel::Cover> report on this module test suite.
 
- ---------------------------- ------ ------ ------ ------ ------ ------ ------
- File                           stmt branch   cond    sub    pod   time  total
- ---------------------------- ------ ------ ------ ------ ------ ------ ------
- Config/Constants.pm            95.0   86.4    n/a   70.0    n/a   44.1   90.2
- Config/Constants/Perl.pm      100.0   50.0   33.3  100.0  100.0   34.6   81.6
- Config/Constants/XML.pm        97.9   70.0   33.3  100.0    n/a   21.3   91.7
- ---------------------------- ------ ------ ------ ------ ------ ------ ------
- Total                          96.9   73.8   33.3   89.3  100.0  100.0   88.7
- ---------------------------- ------ ------ ------ ------ ------ ------ ------
+ ----------------------------------- ------ ------ ------ ------ ------ ------ ------
+ File                                  stmt branch   cond    sub    pod   time  total
+ ----------------------------------- ------ ------ ------ ------ ------ ------ ------
+ Config/Constants.pm                   95.0   90.9    n/a   70.0    n/a   34.5   91.3
+ Config/Constants/Perl.pm             100.0   50.0   33.3  100.0  100.0   17.0   82.0
+ Config/Constants/XML.pm              100.0   50.0   33.3  100.0    n/a   26.2   90.6
+ Config/Constants/XML/SAX/Handler.pm   96.7   81.2    n/a  100.0  100.0   22.4   92.5
+ ----------------------------------- ------ ------ ------ ------ ------ ------ ------
+ Total                                 97.0   78.8   33.3   90.6  100.0  100.0   90.0
+ ----------------------------------- ------ ------ ------ ------ ------ ------ ------
 
 =head1 SEE ALSO
 
@@ -279,7 +281,7 @@ stevan little, E<lt>stevan@iinteractive.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2004 by Infinity Interactive, Inc.
+Copyright 2005 by Infinity Interactive, Inc.
 
 L<http://www.iinteractive.com>
 

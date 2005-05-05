@@ -3,12 +3,13 @@
 use strict;
 use warnings;
 
-use Test::More no_plan => 1;
-
-use Config::Constants xml => 't/conf.xml';
+use Test::More tests => 3;
+use File::Spec;
 
 use t::lib::Foo::Bar;
 use t::lib::Bar::Baz;
+
+use Config::Constants xml => File::Spec->catdir('t', 'confs', 'conf.xml');
 
 is(Foo::Bar::test_BAZ(), 'Foo::Bar -> BAZ is (the coolest module ever)', '... got the right config');
 

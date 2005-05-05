@@ -4,7 +4,7 @@ package Config::Constants::Perl;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub new {
     my ($class, $file) = @_;
@@ -33,7 +33,7 @@ sub constants {
         || die "You must supply a module name";
     (exists $self->{_config}->{$module})
         || die "The module ($module) is not found in this config";  
-    return @{$self->{_config}->{$module}}
+    return map {{ $_ => $self->{_config}->{$module}->{$_} }} keys %{$self->{_config}->{$module}};
 }
 
 1;
@@ -55,9 +55,9 @@ This module reads and evaluates perl files as configuration files. This is a hig
 That said, your perl data structures should look like this:
 
   {
-    'Foo::Bar' => [
-        { 'BAZ' => 'the coolest module ever' },
-    ]
+      'Foo::Bar' => {
+          'BAZ' => 'the coolest module ever',
+      }
   }  
   
 The main structure is a hash, each key being your module name, their values being an Array of Hashes. Those hashes each having exactly one key-value pair. The key is the name of the constant (which should be a valid perl identifier), and the value should be the constant value you want.
