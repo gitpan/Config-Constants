@@ -1,5 +1,5 @@
 <config>
-    <module name='Foo::Bar'>
-          <constant name='BAZ' value='the coolest module ever (included)' />
+    <module name='Bar::Baz'>
+        <constant name='FOO' value='42' />
     </module>
 </config>

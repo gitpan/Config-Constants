@@ -3,7 +3,7 @@ package Config::Constants::XML::SAX::Handler;
 use strict;
 use warnings;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use constant MAX_INCLUDE_DEPTH => 5;
 
@@ -42,7 +42,8 @@ sub start_element {
     }
     elsif ($tag_name eq 'module') {
         $self->{_current_module} = $self->_get_value($el, 'name');
-        $self->{_config}->{$self->{_current_module}} = {};
+        $self->{_config}->{$self->{_current_module}} = {} 
+            unless exists $self->{_config}->{$self->{_current_module}};
     }
     elsif ($tag_name eq 'constant') {
         $self->{_current_constant} = $self->_get_value($el, 'name');
